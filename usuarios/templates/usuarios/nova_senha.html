@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Reserva de Salas - Nova Senha{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <main class="bg-white p-8 md:p-10 rounded-2xl shadow-lg w-full max-w-md mx-4">
+        <div class="flex justify-center mb-6">
+            <img src="{% static "images/logounieuro.png" %}" alt="" class="h-28 w-28">
+        </div>
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">
+            Nova senha
+        </h1>
+
+        <form id="newPasswordForm" class="space-y-4" method='post'>
+            {% csrf_token %}
+            <div>
+                <label for="newPassword" class="sr-only">Nova senha</label>
+                <input type="password" id="newPassword" name="new_password1" placeholder="Digite nova senha" required
+                       class="w-full px-4 py-3 bg-gray-200 border border-gray-200 text-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 placeholder-gray-500">
+            </div>
+
+            <div id="password-requirements" class="space-y-2 text-sm text-gray-700">
+                <div class="flex items-center">
+                    <input id="req-length" type="checkbox" class="h-4 w-4 text-gray-400 rounded border-gray-300 req-checkbox transition-colors duration-200">
+                    <label for="req-length" class="ml-2">Mínimo 8 caracteres</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="req-upper" type="checkbox" class="h-4 w-4 text-gray-400 rounded border-gray-300 req-checkbox transition-colors duration-200">
+                    <label for="req-upper" class="ml-2">Pelo menos 1 letra maiúscula (A-Z)</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="req-lower" type="checkbox" class="h-4 w-4 text-gray-400 rounded border-gray-300 req-checkbox transition-colors duration-200">
+                    <label for="req-lower" class="ml-2">Pelo menos 1 letra minúscula (a-z)</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="req-number" type="checkbox" class="h-4 w-4 text-gray-400 rounded border-gray-300 req-checkbox transition-colors duration-200">
+                    <label for="req-number" class="ml-2">Pelo menos 1 número (0-9)</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="req-special" type="checkbox" class="h-4 w-4 text-gray-400 rounded border-gray-300 req-checkbox transition-colors duration-200">
+                    <label for="req-special" class="ml-2">Pelo menos 1 caractere especial (!@#$...)</label>
+                </div>
+            </div>
+
+            <div>
+                <label for="confirmPassword" class="sr-only">Confirme a senha</label>
+                <input type="password" id="confirmPassword" name="new_password2" placeholder="Confirme a senha" required
+                       class="w-full px-4 py-3 bg-gray-200 border border-gray-200 text-gray-800 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 placeholder-gray-500">
+            </div>
+
+            <div class="text-center min-h-[24px]">
+                <p id="errorMessage" class="text-sm"></p>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Cadastrar
+            </button>
+        </form>
+        
+        <div class="text-center mt-4">
+            <a href="{% url "login" %}" class="text-sm text-gray-600 hover:text-indigo-800 hover:underline">
+                Voltar
+            </a>
+        </div>
+    </main>
+
+    <script src="{% static "js/novasenha.js" %}"></script>
+</body>
+{% endblock %}  

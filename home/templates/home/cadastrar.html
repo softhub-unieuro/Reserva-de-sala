@@ -1,0 +1,133 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Cadastro</h2>
+
+<!-- Tabs -->
+<div class="flex mb-8 rounded-lg overflow-hidden shadow-sm">
+  <button id="tab-sala" class="flex-1 py-3 text-center font-medium bg-blue-600 text-white transition-colors"><i class="fas fa-door-open mr-2"></i>Cadastro de Sala</button>
+  <button id="tab-usuario" class="flex-1 py-3 text-center font-medium bg-gray-100 text-gray-600 transition-colors"><i class="fas fa-user mr-2"></i>Cadastro de Usuário</button>
+</div>
+
+<!-- Formulário de Sala -->
+<div id="form-sala" class="bg-white p-6 rounded-lg shadow-md">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações da Sala</h3>
+  <form id="form-cadastro-sala" class="space-y-4" method='post'>
+    {% csrf_token %}
+    <div class="md:col-span-2">
+      <label for="responsavel" class="block text-sm font-medium text-gray-700 mb-1">Sala criada por:</label>
+      <input type="text" name="" id="responsavel" value="{{ request.user.nome }}" readonly 
+              class="w-full border border-gray-300 rounded-lg p-2">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Bloco da Sala</label>
+      <select name='id_bloco' class="w-full border border-gray-300 rounded-lg p-2" required>
+        <option disabled selected>Selecione o bloco</option>
+        {% for bloco in blocos %}
+          <option value="{{ bloco.id }}">{{ bloco }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Andar</label>
+      <select name='andar' class="w-full border border-gray-300 rounded-lg p-2" required>
+        <option disabled selected>Selecione o andar</option>
+        <option value="Térreo">Térreo</option>
+        <option value="1º Andar">1º Andar</option>
+        <option value="2º Andar">2º Andar</option>
+        <option value="3º Andar">3º Andar</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Nº da Sala</label>
+      <input type="number" name='numero_sala' class="w-full border border-gray-300 rounded-lg p-2" placeholder="Número da sala" required />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Capacidade</label>
+      <input type="number" id="capacidade-sala" min="1" name='capacidade' class="w-full border border-gray-300 rounded-lg p-2" placeholder="Quantidade de alunos" required />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Áudio Visual</label>
+      <input type="text" name='tv_tamanho' class="w-full border border-gray-300 rounded-lg p-2" placeholder="Ex: TV 55″, DataShow"/>
+    </div>
+
+    <div class="pt-4 flex justify-end space-x-3">
+      <button type="button" id="limpar-sala" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200"><i class="fas fa-times mr-2"></i>Cancelar</button>
+      <button type="submit" name="cadastro_sala" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"><i class="fas fa-check mr-2"></i>Confirmar Cadastro</button>
+    </div>
+  </form>
+</div>
+
+<!-- Formulário de Usuário -->
+<div id="form-usuario" class="bg-white p-6 rounded-lg shadow-md hidden">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações do Usuário</h3>
+  <form id="form-cadastro-usuario" method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+      <input type="text" name="nome" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Insira seu nome" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Número de Matrícula</label>
+      <input type="text" name="matricula" maxlength="6" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Ex: 123456" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">E-mail Institucional</label>
+      <input type="email" name="email_institucional" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Ex: ana@unieuro.com.br" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+      <input type="tel" name="telefone" class="w-full border border-gray-300 rounded-lg p-2" placeholder="(XX) XXXXX-XXXX" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="tel" required />
+
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+      <input type="date" name="data_nascimento" class="w-full border border-gray-300 rounded-lg p-2" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Sexo</label>
+      <select name="sexo" class="w-full border border-gray-300 rounded-lg p-2" required>
+        <option disabled selected>Selecione</option>
+        <option value='Masculino'>Masculino</option>
+        <option value='Feminino'>Feminino</option>
+        <option value='Outro'>Outro</option>
+        <option value='Prefiro não informar'>Prefiro não informar</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+      <select name="cargo" class="w-full border border-gray-300 rounded-lg p-2" required>
+        <option disabled selected>Selecione</option>
+        <option value='Diretor'>Diretor</option>
+        <option value='Assessora Administrativa'>Assessor Administrativo</option>
+        <option value='Núcleo de Tecnologia e Informação'>NTI</option>
+        <option value='Coordenado'>Coordenador</option>
+        <option value='Secretário'>Secretário</option>
+        <option value='Núcleo de Apoio Psicopedagógico'>NAPI</option>
+        <option value='Manutenção'>Manutenção</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+      <input type="password" name="senha" class="w-full border border-gray-300 rounded-lg p-2" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Confirme a Senha</label>
+      <input type="password" name="senha2" class="w-full border border-gray-300 rounded-lg p-2" required />
+    </div>
+
+    <div class="pt-4 flex justify-end space-x-3">
+      <button type="button" id="limpar-usuario" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200"><i class="fas fa-times mr-2"></i>Cancelar</button>
+      <button type="submit" name="cadastro_usuario" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"><i class="fas fa-check mr-2"></i>Confirmar Cadastro</button>
+    </div>
+  </form>
+</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Criador do site: Sebastião Brayan de Araujo Alves -->
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    {% block head %}
+    {% endblock head %}
+  </head>
+
+  <body class="bg-gray-50 font-inter">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-sm h-16 flex items-center justify-between px-4">
+      <div class="flex items-center space-x-4">
+        <button id="mobile-menu-btn" class="text-gray-700 md:hidden"><i class="fas fa-bars text-xl"></i></button>
+        <img src="{% static 'images/logounieuro.png' %}" alt="Logotipo" class="h-14 w-auto" />
+        <div class="border-l border-gray-500 h-10 mx-3"></div>
+
+        <div class="hidden md:block">
+          <h1 class="text-xl font-bold text-blue-700">Reserva de Salas</h1>
+          <p class="text-sm text-gray-600">Sistema de Gestão</p>
+        </div>
+      </div>
+    </header>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <nav id="sidebar-mobile" class="fixed top-0 left-0 bottom-0 w-72 bg-white shadow-lg z-50 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between items-center px-4 py-4 border-b">
+          <div class="flex items-center space-x-3">
+            <img src="{% static 'images/logounieuro.png' %}" alt="Logotipo" class="h-10 w-auto" />
+            <span class="font-bold text-blue-700">Reserva de Salas</span>
+          </div>
+          <button id="close-sidebar" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
+        </div>
+
+        <ul class="space-y-1 p-4">
+          <li>
+            <a href="{% url "home" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 {% if request.resolver_match.url_name == "home" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-home w-5 text-center"></i>
+                <span>Início</span>
+            </a>
+          </li>
+
+          {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+          <li>
+            <a href="{% url "cadastro" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 {% if request.resolver_match.url_name == "cadastro" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-user-plus w-5 text-center"></i>
+                <span>Cadastro</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <li>
+            <a href="{% url "listarsalas" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 {% if request.resolver_match.url_name == "reservarsala" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-calendar-alt w-5 text-center"></i>
+                <span>Reservar Salas</span>
+            </a>
+          </li>
+          
+          <li>
+            <a href="{% url "listarsalas" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 {% if request.resolver_match.url_name == "listarsalas" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-eye w-5 text-center"></i>
+                <span>Exibir Salas</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url "perfil" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 {% if request.resolver_match.url_name == "perfil" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-user-cog w-5 text-center"></i>
+                <span>Perfil</span>
+            </a>
+          </li>
+
+          {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+            <li>
+              <a href="{% url "fechamento_semestre" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-chart-bar w-5 text-center"></i>
+                <span>Relatório</span>
+              </a>
+            </li>
+            {% endif %}
+          
+          {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+          <li>
+            <a href="{% url "admin:index" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-info-circle w-5 text-center"></i>
+                <span>Administração</span>
+            </a>
+          </li>
+          {% endif %}
+          
+        </ul>
+      </div>
+
+      <ul class="border-t border-gray-200 p-4">
+        <li>
+          <a href="{% url "logout" %}" class="flex items-center space-x-2 p-3 rounded-md text-gray-700 hover:bg-red-100 hover:text-red-600 transition">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="pt-16 flex">
+
+      <nav class="hidden md:flex flex-col fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-white shadow-md">
+        <ul class="flex flex-col justify-between h-full px-4 py-2">
+          <div>
+
+            <li>
+              <a href="{% url "home" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100
+              {% if request.resolver_match.url_name == "home" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-home w-5 text-center"></i>
+                <span>Início</span>
+              </a>
+            </li>
+
+            {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+            <li>
+              <a href="{% url "cadastro" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100
+              {% if request.resolver_match.url_name == "cadastro" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-user-plus w-5 text-center"></i>
+                <span>Cadastro</span>
+              </a>
+            </li>
+            {% endif %}
+            
+            <li>
+              <a href="{% url "listarsalas" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100
+              {% if request.resolver_match.url_name == "reservarsala" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-calendar-alt w-5 text-center"></i>
+                <span>Reservar Salas</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url "listarsalas" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100
+              {% if request.resolver_match.url_name == "listarsalas" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-eye w-5 text-center"></i>
+                <span>Exibir Salas</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url "perfil" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100
+              {% if request.resolver_match.url_name == "perfil" %}rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600{% endif %}">
+                <i class="fas fa-user-cog w-5 text-center"></i>
+                <span>Perfil</span>
+              </a>
+            </li>
+
+            {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+            <li>
+              <a href="{% url "fechamento_semestre" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-chart-bar w-5 text-center"></i>
+                <span>Relatório</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {% if user.cargo == "Diretor" or user.cargo == "Assessora Administrativa" or user.cargo == "Núcleo de Tecnologia e Informação" %}
+            <li>
+              <a href="{% url "admin:index" %}" class="flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-info-circle w-5 text-center"></i>
+                <span>Administração</span>
+              </a>
+            </li>
+            {% endif %}
+          </div>
+
+          <li class="border-t border-gray-200 mt-2 pt-2">
+            <a href="{% url "logout" %}" class="flex items-center space-x-2 p-3 rounded-md text-gray-700 hover:bg-red-100 hover:text-red-600 transition">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Sair</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <main class="ml-0 md:ml-64 p-4 md:p-8 w-full">
+       {% block content %}{% endblock content %}
+      </main>
+    </div>
+
+    <script>
+      // Menu mobile
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn')
+      const sidebarMobile = document.getElementById('sidebar-mobile')
+      const sidebarOverlay = document.getElementById('sidebar-overlay')
+      const closeSidebar = document.getElementById('close-sidebar')
+      
+      const openSidebar = () => {
+        sidebarMobile.classList.remove('-translate-x-full')
+        sidebarOverlay.classList.remove('hidden')
+        document.body.style.overflow = 'hidden'
+      }
+      const closeSidebarMenu = () => {
+        sidebarMobile.classList.add('-translate-x-full')
+        sidebarOverlay.classList.add('hidden')
+        document.body.style.overflow = 'auto'
+      }
+      
+      mobileMenuBtn.addEventListener('click', openSidebar)
+      closeSidebar.addEventListener('click', closeSidebarMenu)
+      sidebarOverlay.addEventListener('click', closeSidebarMenu)
+      document.addEventListener('keydown', (e) => e.key === 'Escape' && closeSidebarMenu())
+      
+      // Tabs
+      // Verificação para evitar erro se os elementos não existirem na página
+      const tabSala = document.getElementById('tab-sala')
+      const tabUsuario = document.getElementById('tab-usuario')
+      
+      if (tabSala && tabUsuario) {
+          tabSala.addEventListener('click', () => {
+            const formSala = document.getElementById('form-sala');
+            const formUsuario = document.getElementById('form-usuario');
+            if(formSala && formUsuario) {
+                formSala.classList.remove('hidden')
+                formUsuario.classList.add('hidden')
+                tabSala.classList.add('bg-blue-600', 'text-white')
+                tabSala.classList.remove('bg-gray-100', 'text-gray-600')
+                tabUsuario.classList.remove('bg-blue-600', 'text-white')
+                tabUsuario.classList.add('bg-gray-100', 'text-gray-600')
+            }
+          })
+          
+          tabUsuario.addEventListener('click', () => {
+            const formSala = document.getElementById('form-sala');
+            const formUsuario = document.getElementById('form-usuario');
+            if(formSala && formUsuario) {
+                formUsuario.classList.remove('hidden')
+                formSala.classList.add('hidden')
+                tabUsuario.classList.add('bg-blue-600', 'text-white')
+                tabUsuario.classList.remove('bg-gray-100', 'text-gray-600')
+                tabSala.classList.remove('bg-blue-600', 'text-white')
+                tabSala.classList.add('bg-gray-100', 'text-gray-600')
+            }
+          })
+      }
+    </script>
+  </body>
+</html>

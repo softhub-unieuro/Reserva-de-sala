@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva de Salas Unieuro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    h1 {
+      font-family: 'Merriweather', serif;
+    }
+  </style>
+  
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <main class="bg-white p-8 md:p-10 rounded-2xl shadow-lg w-full max-w-md mx-4">
+      
+    <div class="flex justify-center mb-6">
+      <img src="/telas-login/logounieuro.png" alt="" class="h-28 w-28 object-cover">
+    </div>
+
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">
+      Reserva de Salas Unieuro
+    </h1>
+
+    <form id="loginForm" class="space-y-6">
+        
+      <div>
+        <label for="ra" class="block text-sm font-medium text-gray-700 mb-1">
+          RA (Apenas 6 números)
+        </label>
+        <input type="text"
+               id="ra"
+               name="ra"
+               placeholder="Digite os 6 dígitos do RA"
+               required
+               maxlength="6"
+               inputmode="numeric"
+               pattern="\d{6}"
+               title="Digite exatamente 6 números"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+          Senha
+        </label>
+        <input type="password"
+               id="password"
+               name="password"
+               placeholder="Digite sua senha"
+               required
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
+      </div>
+
+      <button type="submit"
+              class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Entrar
+      </button>
+    </form>
+
+    <div class="text-center mt-6">
+      <a href="email.html" class="text-sm text-indigo-600 hover:text-indigo-800 hover:underline">
+        Esqueci minha senha
+      </a>
+    </div>
+
+  </main>
+
+  <script src="/js/login.js" defer></script>
+
+</body>
+</html> 
