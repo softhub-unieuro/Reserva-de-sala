@@ -30,7 +30,10 @@ class LoginUsuario(View):
         usuario = authenticate(request, username=matricula, password=senha)
         if usuario is not None:
             login(request, usuario)
+            messages.success(request, f"Bem-vindo(a) de volta, {usuario.nome}!")
             return redirect("home")
+        
+        messages.error(request, "Matrícula ou senha inválidos.")
         return render(request, "usuarios/login.html")
 
 
@@ -38,7 +41,8 @@ class LoginUsuario(View):
 class LogoutUsuario(LoginRequiredMixin, View):
     def get(self, request: HttpRequest) -> HttpResponse:
         logout(request)
-        return redirect("home")
+        messages.success(request, "Você saiu do sistema.")
+        return redirect("login")
 
 
 # CBV para edicao de usuario
@@ -50,6 +54,10 @@ class Perfil(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Dados atualizados com sucesso!")
+        return super().form_valid(form)
 
 #-------------------------------------------------------------------------------
 
@@ -80,6 +88,11 @@ class EnviarEmail(View):
                 [email],
                 fail_silently=False,
             )
+            messages.success(request, "Código de recuperação enviado para o seu e-mail.")
+        else:
+            messages.error(request, "E-mail não encontrado em nossa base de dados.")
+            return render(request, "usuarios/enviar_email.html")
+            
         return redirect("confirmacaocodigo")
 
 
@@ -106,11 +119,11 @@ class ConfirmacaoCodigo(View):
                 if agora - generated_at > timezone.timedelta(minutes=10):
                     self.limpar_sessao_codigo(request)
                     messages.error(request, "Código expirado, solicite novamente")
-                    return redirect("enviar_email")
+                    return redirect("enviaremail")
             except Exception as e:
                 self.limpar_sessao_codigo(request)
                 messages.error(request, "Erro na validação, solicite novamente")
-                return redirect("enviar_email")
+                return redirect("enviaremail")
 
         # 2. Verifica Limite de Tentativas
         if tentativas >= 5:
@@ -122,9 +135,10 @@ class ConfirmacaoCodigo(View):
         if str(codigo) == str(usuario_codigo):
             self.limpar_sessao_codigo(request)
             request.session["codigo_verificado"] = True
+            messages.success(request, "Código validado! Agora você pode criar sua nova senha.")
             return redirect("novasenha")
 
-        messages.error(request, "Código incorreto, tente novamente")
+        messages.error(request, f"Código incorreto. Você tem mais {5 - tentativas} tentativas.")
         return render(request, "usuarios/codigo.html")
     
     def limpar_sessao_codigo(self, request):
@@ -137,20 +151,20 @@ class NovaSenha(View):
     def get(self, request: HttpRequest) -> HttpResponse:
         if not request.session.get("codigo_verificado"):
             messages.error(request, "Acesso nao autorizado")
-            return redirect("enviar_email")
+            return redirect("enviaremail")
         form = SetPasswordForm(user=None)
         return render(request, "usuarios/nova_senha.html", {"form": form})
 
     def post(self, request: HttpRequest) -> HttpResponse:
         if not request.session.get("codigo_verificado"):
             messages.error(request, "Acesso nao autorizado")
-            return redirect("enviar_email")
+            return redirect("enviaremail")
         email = request.session.get("email_recuperacao")
         try:
             usuario = Usuario.objects.get(email_institucional=email)
         except Usuario.DoesNotExist:
             messages.error(request, "Erro inesperado, tente novamente")
-            return redirect("enviar_email")
+            return redirect("enviaremail")
 
         form = SetPasswordForm(user=usuario, data=request.POST)
         if form.is_valid():

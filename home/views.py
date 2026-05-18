@@ -17,14 +17,40 @@ class Home(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
         reservas = self.get_filtered_queryset(request)
+        hoje = timezone.now().date()
+
+        # Metrics for the dashboard
+        total_salas_ativas = Sala.objects.filter(ativo=True, is_deleted=False).count()
+        total_reservas_ativas = ReservaSala.objects.filter(
+            is_deleted=False, 
+            status_reserva=True, 
+            id_reserva__data_final__gte=hoje
+        ).count()
+        reservas_hoje = ReservaSala.objects.filter(
+            is_deleted=False,
+            status_reserva=True,
+            id_reserva__data_inicial__lte=hoje,
+            id_reserva__data_final__gte=hoje
+        ).count()
+        
+        reservas_recentes = ReservaSala.objects.filter(
+            is_deleted=False,
+            status_reserva=True
+        ).select_related('id_sala', 'id_sala__id_bloco', 'id_reserva').order_by('-id_reserva__created_at')[:5]
 
         paginator = Paginator(reservas, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
         context = self.get_context_data()
-        context['page_obj'] = page_obj
-        context['filtros_at'] = request.GET 
+        context.update({
+            'page_obj': page_obj,
+            'filtros_at': request.GET,
+            'total_salas_ativas': total_salas_ativas,
+            'total_reservas_ativas': total_reservas_ativas,
+            'reservas_hoje': reservas_hoje,
+            'reservas_recentes': reservas_recentes,
+        })
 
         return render(request, 'home/home.html', context)
 
@@ -78,6 +104,7 @@ class Home(LoginRequiredMixin, View):
 
 class Cadastro(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'usuarios.add_usuario'
+    from django.contrib import messages
 
     def get(self, request:HttpRequest)->HttpResponse:
         blocos = Bloco.objects.filter().order_by('bloco')
@@ -91,31 +118,42 @@ class Cadastro(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, 'home/cadastrar.html', context)
     
     def post(self, request:HttpRequest)->HttpResponse:
+        from django.contrib import messages
         salaForm = ValidacaoSala()
         usuarioForm = ValidacaoUsuario()
 
         if 'cadastro_sala' in request.POST: 
-            print('entrou no post de sala')
             salaForm = ValidacaoSala(request.POST)
             if salaForm.is_valid():
-                print('formulario validado')
                 salaForm.save()
+                messages.success(request, "Sala cadastrada com sucesso!")
                 return redirect('home')
             else:
-                print('--- ERRO DE VALIDAÇÃO ---')
-                print(salaForm.errors)
-            return render(request, 'home/cadastrar.html', {'form': salaForm})
+                messages.error(request, "Erro ao cadastrar sala. Verifique os campos.")
+                return render(request, 'home/cadastrar.html', {
+                    'sala_form': salaForm, 
+                    'usuario_form': usuarioForm,
+                    'blocos': Bloco.objects.filter().order_by('bloco')
+                })
                 
         elif 'cadastro_usuario' in request.POST:
             usuarioForm = ValidacaoUsuario(request.POST)
             if usuarioForm.is_valid():
                 usuarioForm.save()
+                messages.success(request, "Usuário cadastrado com sucesso!")
                 return redirect('home')
-            return render(request, 'home/cadastrar.html', {'form': usuarioForm})
+            else:
+                messages.error(request, "Erro ao cadastrar usuário. Verifique os campos.")
+                return render(request, 'home/cadastrar.html', {
+                    'sala_form': salaForm, 
+                    'usuario_form': usuarioForm,
+                    'blocos': Bloco.objects.filter().order_by('bloco')
+                })
         
         context = {
             'sala_form': salaForm,
-            'usuario_form': usuarioForm
+            'usuario_form': usuarioForm,
+            'blocos': Bloco.objects.filter().order_by('bloco')
         }
         
         return render(request, 'home/cadastrar.html', context)

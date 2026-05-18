@@ -69,8 +69,14 @@ class Turma(models.Model):
         blank=True,
         null=True
     )
+    TURNO_CHOICES = (
+        ('Matutino', 'Matutino'),
+        ('Vespertino', 'Vespertino'),
+        ('Noturno', 'Noturno'),
+    )
     codigo_turma = models.CharField(max_length=255, verbose_name='Código da turma')
     periodo_letivo = models.CharField(max_length=25, null=True)
+    turno = models.CharField(max_length=20, choices=TURNO_CHOICES, null=True, blank=True)
     quantidade_aluno = models.IntegerField(null=True, verbose_name='Quantidade de alunos')
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
