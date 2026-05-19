@@ -17,9 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python dependencies
 COPY requirements.txt .
-# Convert requirements.txt from UTF-16 to UTF-8 if needed, then install
-RUN python3 -c "data=open('requirements.txt','rb').read(); \
-    open('requirements.txt','w').write(data.decode('utf-16') if data[:2] in [b'\xff\xfe', b'\xfe\xff'] else data.decode('utf-8-sig'))"
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
